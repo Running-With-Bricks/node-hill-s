@@ -14,7 +14,7 @@
     "src/**/*.json"
   ],
   "typedocOptions": {
-    "name": "node-hill",
+    "name": "node-hill-s",
     "hideGenerator": true,
     "theme": "default",
     "out": "public",

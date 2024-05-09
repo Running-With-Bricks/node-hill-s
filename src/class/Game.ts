@@ -213,7 +213,7 @@ export class Game extends EventEmitter {
     /**
      * The message that will be sent to players (locally) who join the game.
      * 
-     * @default [#14d8ff][NOTICE]: This server is proudly hosted with node-hill {@link version}.
+     * @default [#14d8ff][NOTICE]: This server is proudly hosted with node-hill-s {@link version}.
      */
     MOTD: string
 
@@ -257,7 +257,7 @@ export class Game extends EventEmitter {
 
         this.systemMessages = true
 
-        this.MOTD = `[#14d8ff][NOTICE]: This server is proudly hosted with node-hill ${this.version}.`
+        this.MOTD = `[#14d8ff][NOTICE]: This server is proudly hosted with node-hill-s ${this.version}.`
 
         this.afterAuth = null
 
