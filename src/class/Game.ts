@@ -1,4 +1,4 @@
-import { resolve, basename, join } from "path"
+import { resolve, join } from "path"
 
 import { EventEmitter } from "events"
 
