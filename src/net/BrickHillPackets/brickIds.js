@@ -15,7 +15,13 @@ async function createBrickIdBuffer(brick, modification) {
             break
         }
         case "rot": {
-            brickPacket.write("int32", brick.rotation)
+            brickPacket.write("int32", brick.rotation.z)
+            break
+        }
+        case "rot2": {
+            brickPacket.write("int32", brick.rotation.x)
+            brickPacket.write("int32", brick.rotation.y)
+            brickPacket.write("int32", brick.rotation.z)
             break
         }
         case "scale": {

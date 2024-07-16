@@ -65,8 +65,8 @@ function serialize(bricks: Brick[]): Buffer {
         if (brick.name)
             data.name = brick.name
 
-        if (brick.rotation)
-            data.rotation = brick.rotation
+        if (!brick.rotation.equalsVector(DEFAULT_BRICK.rotation))
+            data.rotation = [brick.rotation.x, brick.rotation.y, brick.rotation.z]
 
         if (brick.model)
             data.model = brick.model

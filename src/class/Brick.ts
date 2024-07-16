@@ -161,7 +161,7 @@ export default class Brick extends EventEmitter {
 
     async setRotation(rot: Vector3) {
         this.rotation = rot
-        return await createBrickPacket(this, "rot")
+        return await createBrickPacket(this, "rot2")
     }
 
     async setModel(model: number) {
