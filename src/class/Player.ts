@@ -409,6 +409,7 @@ export default class Player extends EventEmitter {
 
     /** 
    * Calls back whenever the player presses a key.
+   * @deprecated New player.keyPressed and player.keyReleased api allows more functionality
    * @callback
    * @example
    * ```js
@@ -449,13 +450,46 @@ export default class Player extends EventEmitter {
         }
     }
 
+
+    /** 
+   * Calls back whenever the player presses a key.
+   * @callback
+   **/
+
+    keyPressed(key: KeyTypes, callback: () => void): Disconnectable {
+        const kpCallback = (key2: KeyTypes) => {
+            if (key === key2) callback()
+        }
+        this.on("keydown", kpCallback)
+        scripts.addKeypress(this.socket,key)
+        return {
+            disconnect: () => this.off("keydown", kpCallback)
+        }
+    }
+
+    /** 
+   * Calls back whenever the player releases a key.
+   * @callback
+   **/
+
+    keyReleased(key: KeyTypes, callback: () => void): Disconnectable {
+        const kpCallback = (key2: KeyTypes) => {
+            if (key === key2) callback()
+        }
+        this.on("keyup", kpCallback)
+        scripts.addKeypress(this.socket,key)
+        return {
+            disconnect: () => this.off("keyup", kpCallback)
+        }
+    }
+
     /**
      * Kicks the player from the game.
      * @param message The kick message
      */
     async kick(message: string) {
         this.socket._kickInProcess = true
-        
+
         return scripts.kick(this.socket, message)
     }
 

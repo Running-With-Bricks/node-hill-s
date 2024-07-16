@@ -43,7 +43,9 @@ export enum PacketEnums {
 
     DestroyBot = 15,
 
-    DeleteBrick = 16
+    DeleteBrick = 16,
+
+    AddKeypress = 21
 }
 
 export default class PacketBuilder {

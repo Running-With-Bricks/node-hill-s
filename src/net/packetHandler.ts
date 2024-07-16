@@ -26,6 +26,8 @@ export enum ClientPacketType {
     Projectile = 4,
     ClickDetection = 5,
     PlayerInput = 6,
+    KeyPress = 7,
+    KeyRelease = 8,
     Heartbeat = 18
 }
 
@@ -196,6 +198,32 @@ async function handlePacketType(type: ClientPacketType, socket: ClientSocket, re
 
                 if (key && whiteListedKeys.includes(key))
                     player.emit("keypress", key)
+            } catch (err) {
+                return
+            }
+            break
+        }
+        case ClientPacketType.KeyPress: {
+            try {
+                const amount = reader.readUInt8(reader.length - 1)
+                for (let i = 0; i < amount; i++) {
+                    const key = reader.readStringNT()
+                    if (key && whiteListedKeys.includes(key))
+                        player.emit("keydown", key)
+                }
+            } catch (err) {
+                return
+            }
+            break
+        }
+        case ClientPacketType.KeyRelease: {
+            try {
+                const amount = reader.readUInt8(reader.length - 1)
+                for (let i = 0; i < amount; i++) {
+                    const key = reader.readStringNT()
+                    if (key && whiteListedKeys.includes(key))
+                        player.emit("keyup", key)
+                }
             } catch (err) {
                 return
             }

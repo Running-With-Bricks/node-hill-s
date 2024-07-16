@@ -17,6 +17,7 @@ module.exports = {
     "getRankInGroup": require("./player/getRankInGroup"),
     "playerOwnsAsset": require("./player/ownsAsset"),
     "getPlayerValue": require("./player/getValue"),
+    "addKeypress": require("./player/addKeypress"),
     // Team
     "teamPacket": require("./team/team"),
     // World
