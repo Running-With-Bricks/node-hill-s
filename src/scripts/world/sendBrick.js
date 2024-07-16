@@ -14,7 +14,7 @@ async function addBrickProperties(packet, brick) {
     // Additional attributes
     let attributes = ""
     if (brick.rotation)
-        attributes += "A"
+        attributes += "I"
 
     if (brick.shape)
         attributes += "B"
@@ -36,9 +36,6 @@ async function addBrickProperties(packet, brick) {
     for (let i = 0; i < attributes.length; i++) {
         const ID = attributes.charAt(i)
         switch (ID) {
-            case "A":
-                packet.write("int32", brick.rotation)
-                break
             case "B":
                 packet.write("string", brick.shape)
                 break
@@ -49,6 +46,11 @@ async function addBrickProperties(packet, brick) {
             case "G":
                 packet.write("bool", brick.clickable)
                 packet.write("uint32", brick.clickDistance)
+                break
+            case "I":
+                packet.write("int32", brick.rotation.x)
+                packet.write("int32", brick.rotation.y)
+                packet.write("int32", brick.rotation.z)
                 break
         }
 

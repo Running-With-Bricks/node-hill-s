@@ -60,8 +60,8 @@ export default class Brick extends EventEmitter {
     /** If the brick is passable by other players. */
     collision = true
 
-    /** The current rotation of the brick (must be % 90). */
-    rotation: number
+    /** The current rotation of the brick. */
+    rotation: Vector3
 
     /** The asset id the brick will appear as. */
     model: number
@@ -159,7 +159,7 @@ export default class Brick extends EventEmitter {
         return await createBrickPacket(this, "scale")
     }
 
-    async setRotation(rot: number) {
+    async setRotation(rot: Vector3) {
         this.rotation = rot
         return await createBrickPacket(this, "rot")
     }
@@ -334,25 +334,7 @@ export default class Brick extends EventEmitter {
             }
         }
     }
-    /**
-     * Makes the Brick point towards a point in a Vector3 plane.
-     * @example
-     * ```js
-     * const camera = world.bricks.find(brick => brick.name === 'cameraBrick')
-     * const dummyObject = world.bricks.find(brick => brick.name === 'object')
-     * 
-     * camera.pointTowards(dummyObject.position)
-     * ```
-     */
-    async pointTowards(point: Vector3) {
-        const angleRad = Math.atan((this.position.y + this.scale.y / 2 - point.y) / (this.position.x + this.scale.x - point.x))
-        let angleDeg = angleRad * 180 / Math.PI
 
-        if (angleDeg < 0)
-            angleDeg = angleDeg + 180
-
-        return this.setRotation(360 - angleDeg)
-    }
     /** 
     * Calls the specified callback when a player clicks the brick.
     * @callback

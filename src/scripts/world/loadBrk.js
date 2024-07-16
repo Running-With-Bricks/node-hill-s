@@ -24,7 +24,7 @@ async function loadBrk(map) {
     const environment = {}
 
     let currentBrick = -1
-    
+
     let scriptWarning = false // Doesn't load scripts, just notifies if the .brk contains scripts
 
     for (let line of LINES) {
@@ -82,7 +82,12 @@ async function loadBrk(map) {
                 continue
             }
             case "ROT": {
-                bricks[currentBrick].rotation = Number(VALUE)
+                const rot = VALUE.split(" ").map(val => Number(val))
+                if (rot.length === 1) {
+                    bricks[currentBrick].rotation = new Vector3(0, 0, rot[0])
+                } else {
+                    bricks[currentBrick].rotation = new Vector3(rot[0], rot[1], rot[2])
+                }
                 continue
             }
             case "SHAPE": {
@@ -103,9 +108,9 @@ async function loadBrk(map) {
                 const colors = VALUE.split(" ")
                 const color = convertRGB(colors[0], colors[1], colors[2])
                 const team = new Team(
-                    teams[teams.length - 1], 
+                    teams[teams.length - 1],
                     rgbToHex(
-                        color[0], 
+                        color[0],
                         color[1],
                         color[2]
                     )
@@ -132,21 +137,21 @@ async function loadBrk(map) {
 
         if (DATA.length === 10) {
             const RGB = convertRGB(DATA[6], DATA[7], DATA[8]), // Convert to OpenGL colour format
-                xPos    = Number(DATA[0]),
-                yPos    = Number(DATA[1]),
-                zPos    = Number(DATA[2]),
-                xScale  = Number(DATA[3]),
-                yScale  = Number(DATA[4]),
-                zScale  = Number(DATA[5]),
-                color   = rgbToHex(
-                    RGB[0], 
+                xPos = Number(DATA[0]),
+                yPos = Number(DATA[1]),
+                zPos = Number(DATA[2]),
+                xScale = Number(DATA[3]),
+                yScale = Number(DATA[4]),
+                zScale = Number(DATA[5]),
+                color = rgbToHex(
+                    RGB[0],
                     RGB[1],
                     RGB[2]
                 ),
-                transparency   = Number(DATA[9])
-                
+                transparency = Number(DATA[9])
+
             const newBrick = new Brick(
-                new Vector3(xPos, yPos, zPos), 
+                new Vector3(xPos, yPos, zPos),
                 new Vector3(xScale, yScale, zScale),
                 color
             )
@@ -167,12 +172,12 @@ async function loadBrk(map) {
 
     environment.weather = Game.world.environment.weather
 
-    return { 
-        teams: teams, 
-        tools: tools, 
-        bricks: bricks, 
-        environment: environment, 
-        spawns: spawns 
+    return {
+        teams: teams,
+        tools: tools,
+        bricks: bricks,
+        environment: environment,
+        spawns: spawns
     }
 }
 
