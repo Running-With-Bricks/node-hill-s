@@ -37,7 +37,7 @@ import { SmartBuffer } from "smart-buffer"
 import AssetDownloaderInstance, { AssetDownloader } from "./class/AssetDownloader"
 import SanctionInstance, { Sanction } from "./class/Sanction"
 
-const NPM_LATEST_VERSION = "https://registry.npmjs.org/node-hill/latest"
+const NPM_LATEST_VERSION = "https://registry.npmjs.org/node-hill-s/latest"
 
 const CORE_DIRECTORY = resolve(__dirname, "./core_scripts")
 
