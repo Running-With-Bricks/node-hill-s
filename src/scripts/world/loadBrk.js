@@ -84,7 +84,7 @@ async function loadBrk(map) {
             case "ROT": {
                 const rot = VALUE.split(" ").map(val => Number(val))
                 if (rot.length === 1) {
-                    bricks[currentBrick].rotation = new Vector3(0, 0, rot[0])
+                    bricks[currentBrick].rotation = new Vector3(0, 0, (rot[0] % 90) != 0 ? rot[0] + 90 : 0)
                 } else {
                     bricks[currentBrick].rotation = new Vector3(rot[0], rot[1], rot[2])
                 }
