@@ -150,6 +150,10 @@ function createPlayerIdBuffer(player, idString = "") {
             case "h": { // Set items + arm to -1
                 break
             }
+            case "o": {
+                playerPacket.write("float", player.gravity)
+                break
+            }
         }
     }
 

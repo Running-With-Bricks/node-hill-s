@@ -258,6 +258,9 @@ export default class Player extends EventEmitter {
     /** How high the player can jump. */
     jumpPower = 5
 
+    /** Gravity for player's physics. */
+    gravity = 3
+
     /** The current score of the player. */
     score = 0
 
@@ -379,6 +382,8 @@ export default class Player extends EventEmitter {
         this.speech = ""
 
         this.jumpPower = 5
+
+        this.gravity = 3
 
         this.score = 0
 
@@ -754,6 +759,12 @@ export default class Player extends EventEmitter {
     async setJumpPower(power: number) {
         this.jumpPower = power
         return createPlayerIds(this, "2")
+            .send(this.socket)
+    }
+
+    async setGravity(gravityValue: number) {
+        this.gravity = gravityValue
+        return createPlayerIds(this, "o")
             .send(this.socket)
     }
 
