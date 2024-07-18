@@ -97,6 +97,8 @@ export default class Brick extends EventEmitter {
 
         Brick.brickId += 1
 
+        this.rotation = new Vector3(0,0,0)
+
         this.destroyed = false
 
         this._steps = []
