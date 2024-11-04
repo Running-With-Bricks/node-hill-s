@@ -990,7 +990,7 @@ export default class Player extends EventEmitter {
     ``` 
      */
     async grantBadge(badgeId: number): Promise<boolean> {
-        return scripts.playerGrantBadge(Game.serverSettings.hostKey, this.validationToken, badgeId);
+        return scripts.playerGrantBadge(Game.serverSettings.hostKey, this.validationToken, badgeId)
     }
 
     // /**
