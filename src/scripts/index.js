@@ -16,6 +16,8 @@ module.exports = {
     "getUserInfo": require("./player/getUserInfo"),
     "getRankInGroup": require("./player/getRankInGroup"),
     "playerOwnsAsset": require("./player/ownsAsset"),
+    "playerOwnsBadge": require("./player/ownsBadge"),
+    "playerGrantBadge": require("./player/grantBadge"),
     "getPlayerValue": require("./player/getValue"),
     "addKeypress": require("./player/addKeypress"),
     // Team

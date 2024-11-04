@@ -963,6 +963,36 @@ export default class Player extends EventEmitter {
         return scripts.playerOwnsAsset(this.userId, assetId)
     }
 
+    /**
+     * Returns true or false if the player owns a specified badgeId.
+     * 
+     * @example
+     * ```js
+     * Game.on("initialSpawn", async(p) => {
+     *      let ownsBadge = await p.ownsBadge(1256)
+     *      console.log("Player owns badge: ", ownsBadge)
+     * })
+    ``` 
+     */
+    async ownsBadge(badgeId: number): Promise<boolean> {
+        return scripts.playerOwnsBadge(this.userId, badgeId)
+    }
+
+    /**
+     * Grants a badge to the player. Note that the badge must be offsale to be grantable.
+     * 
+     * @example
+     * ```js
+     * Game.on("initialSpawn", async(p) => {
+     *      let response = await p.grantBadge(1256)
+     *      console.log("Grant response: ", response)
+     * })
+    ``` 
+     */
+    async grantBadge(badgeId: number): Promise<boolean> {
+        return scripts.playerGrantBadge(Game.serverSettings.hostKey, this.validationToken, badgeId);
+    }
+
     // /**
     //  * Returns JSON data of total value and direction of users crate \
     //  * https://api.brick-hill.com/v1/user/1/value
