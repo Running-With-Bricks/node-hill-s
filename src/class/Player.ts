@@ -8,6 +8,7 @@ import * as scripts from "../scripts"
 import PacketBuilder, { PacketEnums } from "../net/PacketBuilder"
 import createPlayerIds from "../net/BrickHillPackets/playerIds"
 import createAssetIds from "../net/BrickHillPackets/assetIds"
+import createSoundPacket from "../net/BrickHillPackets/soundIds"
 
 import Vector3 from "./Vector3"
 import Outfit from "./Outfit"
@@ -467,7 +468,7 @@ export default class Player extends EventEmitter {
             if (key === key2) callback()
         }
         this.on("keydown", kpCallback)
-        scripts.addKeypress(this.socket,key)
+        scripts.addKeypress(this.socket, key)
         return {
             disconnect: () => this.off("keydown", kpCallback)
         }
@@ -483,7 +484,7 @@ export default class Player extends EventEmitter {
             if (key === key2) callback()
         }
         this.on("keyup", kpCallback)
-        scripts.addKeypress(this.socket,key)
+        scripts.addKeypress(this.socket, key)
         return {
             disconnect: () => this.off("keyup", kpCallback)
         }
@@ -695,6 +696,18 @@ export default class Player extends EventEmitter {
         return loadSounds.send(this.socket)
     }
 
+    async playSound(sound: SoundEmitter) {
+        return await createSoundPacket(sound, "play", this.socket)
+    }
+
+    async stopSound(sound: SoundEmitter) {
+        return await createSoundPacket(sound, "stop", this.socket)
+    }
+
+    async destroySound(sound: SoundEmitter) {
+        return await createSoundPacket(sound, "destroy", this.socket)
+    }
+
     /** Takes an array of bricks, and deletes them all from this client. */
     async deleteBricks(bricks: Brick[]) {
         for (const brick of bricks) {
@@ -788,12 +801,12 @@ export default class Player extends EventEmitter {
 
         // Send all other clients this client.
         const otherClientsPacket = new PacketBuilder(PacketEnums.SendPlayers)
-            .write("uint8" , 1)
+            .write("uint8", 1)
             .write("uint32", this.netId)
             .write("string", this.username)
             .write("uint32", this.userId)
-            .write("bool"  , this.admin)
-            .write("uint8" , this.membershipType)
+            .write("bool", this.admin)
+            .write("uint8", this.membershipType)
 
         promises.push(otherClientsPacket.broadcastExcept([this]))
 
@@ -806,8 +819,8 @@ export default class Player extends EventEmitter {
             sendPlayersPacket.write("uint32", player.netId)
             sendPlayersPacket.write("string", player.username)
             sendPlayersPacket.write("uint32", player.userId)
-            sendPlayersPacket.write("bool"  , player.admin)
-            sendPlayersPacket.write("uint8" , player.membershipType)
+            sendPlayersPacket.write("bool", player.admin)
+            sendPlayersPacket.write("uint8", player.membershipType)
         }
 
         promises.push(sendPlayersPacket.send(this.socket))

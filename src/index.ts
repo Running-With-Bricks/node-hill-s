@@ -14,6 +14,7 @@ import GameObject, { Game } from "./class/Game"
 
 import Team from "./class/Team"
 import Brick from "./class/Brick"
+import SoundEmitter from "./class/SoundEmitter"
 import Bot from "./class/Bot"
 import PacketBuilder from "./net/PacketBuilder"
 import Vector3 from "./class/Vector3"
@@ -47,6 +48,7 @@ export { GameObject }
 export { default as Player, ClientSocket } from "./class/Player"
 export { default as Team } from "./class/Team"
 export { default as Brick } from "./class/Brick"
+export { default as SoundEmitter } from "./class/SoundEmitter"
 export { default as Outfit } from "./class/Outfit"
 export { default as Vector3 } from "./class/Vector3"
 export { default as Bot } from "./class/Bot"
@@ -83,6 +85,9 @@ export interface VM_GLOBALS {
 
     /** @global */
     Brick: typeof Brick
+
+    /** @global */
+    SoundEmitter: typeof SoundEmitter
 
     /** @global */
     Bot: typeof Bot
@@ -220,6 +225,8 @@ function loadScripts() {
         Team: Team,
 
         Brick: Brick,
+
+        SoundEmitter: SoundEmitter,
 
         Bot: Bot,
 

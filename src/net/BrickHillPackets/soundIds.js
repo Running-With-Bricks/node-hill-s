@@ -1,6 +1,6 @@
 const PacketBuilder = require("../../net/PacketBuilder").default
 
-async function createSoundIdBuffer(sound, modification) {
+async function createSoundIdBuffer(sound, modification, socket) {
     const soundPacket = new PacketBuilder("SoundEmitter")
         .write("uint32", sound.netId)
         .write("string", modification)
@@ -34,12 +34,20 @@ async function createSoundIdBuffer(sound, modification) {
             await soundPacket.writeAsset(sound.sound)
             break
         }
+        case "soundPos": {
+            soundPacket.write("float", 0)// TODO change this when you get sound pos setting to work
+            break
+        }
         case "destroy":
         case "stop":
         case "play": {
             break
         }
         
+    }
+
+    if(socket){
+        return soundPacket.send(socket)
     }
 
     return soundPacket.broadcast()

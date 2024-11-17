@@ -14,11 +14,14 @@ async function addSoundProperties(packet, sound) {
     if (sound.loop)
         attributes += "C"
 
-    if (sound.range != 10)
+    if (sound.range != 30)
         attributes += "D"
 
     if (sound.global)
         attributes += "F"
+    
+    if (sound.playing)
+        attributes += "G"
 
     packet.write("string", attributes)
 
@@ -39,6 +42,9 @@ async function addSoundProperties(packet, sound) {
                 break
             case "F":
                 packet.write("bool", sound.global)
+                break
+            case "G":
+                packet.write("float", 0)
                 break
         }
 

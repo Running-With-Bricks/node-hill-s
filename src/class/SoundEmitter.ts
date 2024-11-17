@@ -1,10 +1,8 @@
 import { EventEmitter } from "events"
 
-import Game, { Disconnectable } from "./Game"
+import Game from "./Game"
 
 import Vector3 from "./Vector3"
-
-import PacketBuilder, { PacketEnums } from "../net/PacketBuilder"
 
 import createSoundPacket from "../net/BrickHillPackets/soundIds"
 
@@ -23,7 +21,7 @@ export default class SoundEmitter extends EventEmitter {
     pitch = 1
 
     /** Range of the sound emitted */
-    range = 10
+    range = 30
 
     /** Whether or not to loop the sound */
     loop = false
@@ -36,11 +34,16 @@ export default class SoundEmitter extends EventEmitter {
     /** If .destroy() has been called on the sound emitter. */
     destroyed = false
 
+    playing = false
+
+    /** Used for attempting to sync the audio between clients */
+    startTime: Date
+
     private _steps: Array<NodeJS.Timeout>
 
     static soundEmitterId = 0
 
-    constructor(sound: number, position = new Vector3(0, 0, 0), range = 10) {
+    constructor(sound: number, position = new Vector3(0, 0, 0), range = 30) {
         super()
 
         SoundEmitter.soundEmitterId += 1
@@ -63,6 +66,8 @@ export default class SoundEmitter extends EventEmitter {
         this.position = position
 
         this.destroyed = false
+
+        this.playing = false
 
     }
 
@@ -151,11 +156,13 @@ export default class SoundEmitter extends EventEmitter {
 
     /** Play the sound */
     async play() {
+        this.playing = true
         return await createSoundPacket(this, "play")
     }
 
     /** Stop the sound */
     async stop() {
+        this.playing = false
         return await createSoundPacket(this, "stop")
     }
 }
