@@ -9,6 +9,7 @@ import Game from "../class/Game"
 import Player, { ClientSocket } from "../class/Player"
 
 import AssetDownloader from "../class/AssetDownloader"
+import Vector3 from "../class/Vector3"
 
 export interface PacketBuilderOptions {
     compression?: boolean
@@ -45,7 +46,12 @@ export enum PacketEnums {
 
     DeleteBrick = 16,
 
-    AddKeypress = 21
+    AddKeypress = 21,
+
+    SoundEmitter = 22,
+
+    SendSoundEmitters = 23,
+
 }
 
 export default class PacketBuilder {
@@ -69,8 +75,12 @@ export default class PacketBuilder {
             compression: false
         }
     }
+    write(type: "string", data: string): PacketBuilder;
+    write(type: "bool", data: boolean): PacketBuilder;
+    write(type: "float" | "uint8" | "int32" | "uint32", data: number): PacketBuilder;
+    write(type: "vector3", data: Vector3): PacketBuilder;
 
-    write(type: string, data: number | string | boolean): PacketBuilder {
+    write(type: string, data: any): PacketBuilder {
         switch (type) {
             case "string": {
                 this.buffer.writeStringNT(data as string)
@@ -97,6 +107,11 @@ export default class PacketBuilder {
                 this.buffer.writeUInt32LE(data as number)
                 break
             }
+            case "vector3": {
+                this.buffer.writeFloatLE(data.x as number)
+                this.buffer.writeFloatLE(data.y as number)
+                this.buffer.writeFloatLE(data.z as number)
+            }
         }
         return this
     }
@@ -120,6 +135,8 @@ export default class PacketBuilder {
             this.write("string", data.mesh)
         if (data.texture)
             this.write("string", data.texture)
+        if (data.sound)
+            this.write("string", data.sound)
 
         return this
     }

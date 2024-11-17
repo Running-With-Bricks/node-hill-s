@@ -39,6 +39,8 @@ export interface World {
     bots: Array<Bot>,
     /** An array of all the tools in the game. */
     tools: Array<Tool>,
+    /** An array of all the sound emitters in the game. */
+    sounds: Array<SoundEmitter>,
 }
 
 export interface Disconnectable {
@@ -279,7 +281,9 @@ export class Game extends EventEmitter {
 
             spawns: [],
 
-            bots: []
+            bots: [],
+
+            sounds: [],
         }
     }
 
@@ -395,6 +399,14 @@ export class Game extends EventEmitter {
         return packet.broadcast()
     }
 
+    async newSoundEmitter(sound: SoundEmitter) {
+        this.world.sounds.push(sound)
+
+        const packet = await scripts.loadSounds([sound])
+
+        return packet.broadcast()
+    }
+
     /** Takes an array of bricks, and deletes them all from every client. This will modify world.bricks. */
     async deleteBricks(bricks: Brick[]) {
         const deletePacket = scripts.deleteBricks(bricks)
@@ -443,6 +455,15 @@ export class Game extends EventEmitter {
         const brickPacket = await scripts.loadBricks(bricks)
 
         return brickPacket.broadcast()
+    }
+
+    /** Takes an array of sound emitters and loads them to all clients. */
+    async loadSounds(sounds: Array<SoundEmitter>) {
+        this.world.sounds = this.world.sounds.concat(sounds)
+
+        const soundPacket = await scripts.loadSounds(sounds)
+
+        return soundPacket.broadcast()
     }
 
     async setDataLoaded(): Promise<SetData> {
@@ -652,6 +673,8 @@ import * as scripts from "../scripts"
 import Brick from "./Brick"
 
 import Bot from "./Bot"
+
+import SoundEmitter from "./SoundEmitter"
 
 import PacketBuilder, { PacketEnums } from "../net/PacketBuilder"
 

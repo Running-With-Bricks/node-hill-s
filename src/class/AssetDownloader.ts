@@ -6,6 +6,7 @@ const ASSET_API = (itemId: number) => `https://sandpile.xyz/api/getAsset/${itemI
 export interface AssetData {
     mesh: string
     texture: string
+    sound: string
 }
 
 export class AssetDownloader {
@@ -21,7 +22,8 @@ export class AssetDownloader {
 
         const assetData: AssetData = {
             mesh: null,
-            texture: null
+            texture: null,
+            sound: null
         }
 
         let req
@@ -35,6 +37,7 @@ export class AssetDownloader {
 
         assetData.mesh = req.model
         assetData.texture = req.texture
+        assetData.sound = req.sound
 
         this.cache[assetId] = Object.assign({}, assetData)
 

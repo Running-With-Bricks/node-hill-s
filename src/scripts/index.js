@@ -26,6 +26,7 @@ module.exports = {
     "setEnvironment": require("./world/setEnvironment"),
     "loadBrk": require("./world/loadBrk"),
     "loadBricks": require("./world/loadBricks"),
+    "loadSounds": require("./world/loadSounds"),
     "deleteBricks": require("./world/deleteBricks"),
     "addBrickProperties": require("./world/sendBrick"),
     "pickSpawn": require("./world/pickSpawn"),

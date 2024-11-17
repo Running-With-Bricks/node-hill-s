@@ -14,6 +14,7 @@ import Outfit from "./Outfit"
 import Tool from "./Tool"
 
 import { KeyTypes } from "../util/keys/whitelisted"
+import SoundEmitter from "./SoundEmitter"
 
 export enum Client {
     /**The original client made by Luke */
@@ -687,6 +688,13 @@ export default class Player extends EventEmitter {
         return loadBricks.send(this.socket)
     }
 
+    /** Takes an array of sound emitters and loads them to the client locally. */
+    async loadSounds(sounds: Array<SoundEmitter>) {
+        const loadSounds = await scripts.loadSounds(sounds)
+
+        return loadSounds.send(this.socket)
+    }
+
     /** Takes an array of bricks, and deletes them all from this client. */
     async deleteBricks(bricks: Brick[]) {
         for (const brick of bricks) {
@@ -780,12 +788,12 @@ export default class Player extends EventEmitter {
 
         // Send all other clients this client.
         const otherClientsPacket = new PacketBuilder(PacketEnums.SendPlayers)
-            .write("uint8", 1)
+            .write("uint8" , 1)
             .write("uint32", this.netId)
             .write("string", this.username)
             .write("uint32", this.userId)
-            .write("uint8", this.admin)
-            .write("uint8", this.membershipType)
+            .write("bool"  , this.admin)
+            .write("uint8" , this.membershipType)
 
         promises.push(otherClientsPacket.broadcastExcept([this]))
 
@@ -798,8 +806,8 @@ export default class Player extends EventEmitter {
             sendPlayersPacket.write("uint32", player.netId)
             sendPlayersPacket.write("string", player.username)
             sendPlayersPacket.write("uint32", player.userId)
-            sendPlayersPacket.write("uint8", player.admin)
-            sendPlayersPacket.write("uint8", player.membershipType)
+            sendPlayersPacket.write("bool"  , player.admin)
+            sendPlayersPacket.write("uint8" , player.membershipType)
         }
 
         promises.push(sendPlayersPacket.send(this.socket))
@@ -1192,6 +1200,9 @@ export default class Player extends EventEmitter {
             const map = await scripts.loadBricks(Game.world.bricks)
             if (map) await map.send(this.socket)
         }
+
+        const sounds = await scripts.loadSounds(Game.world.sounds)
+        if (sounds) await sounds.send(this.socket)
 
         this._createTeams()
 
