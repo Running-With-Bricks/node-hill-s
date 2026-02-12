@@ -912,6 +912,16 @@ export default class Player extends EventEmitter {
         return packetBuilder.broadcast()
     }
 
+    async setRotation(rotation: Vector3) {
+        this.rotation = new Vector3().fromVector(rotation)
+
+        this.emit("moved", this.position, this.rotation.z)
+
+        const packetBuilder = createPlayerIds(this, "DEF")
+
+        return packetBuilder.broadcast()
+    }
+
     async setScale(scale: Vector3) {
         this.scale = new Vector3().fromVector(scale)
 
@@ -1087,6 +1097,8 @@ export default class Player extends EventEmitter {
         }
 
         await this.setPosition(newSpawnPosition)
+
+        await this.setRotation(new Vector3(0, 0, 0))
 
         const killPacket = new PacketBuilder(PacketEnums.Kill)
             .write("uint32", this.netId)

@@ -79,6 +79,9 @@ export default class Brick extends EventEmitter {
 
     /** The shape of the brick. */
     shape: string
+    
+    /** Additional attributes given to the brick from the BRK file that are not used by node-hill-s */
+    additionalAttributes: object;
 
     private _hitMonitor?: NodeJS.Timeout
 
@@ -120,6 +123,8 @@ export default class Brick extends EventEmitter {
         this.collision = true
 
         this.lightEnabled = false
+
+        this.additionalAttributes = {}
 
         this._playersTouching = new Set()
 

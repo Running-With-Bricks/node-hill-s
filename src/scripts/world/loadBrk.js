@@ -76,62 +76,67 @@ async function loadBrk(map) {
 
         const VALUE = DATA.slice(1).join(" ")
 
-        switch (ATTRIBUTE) {
-            case "NAME": {
-                bricks[currentBrick].name = VALUE
-                continue
-            }
-            case "ROT": {
-                const rot = VALUE.split(" ").map(val => Number(val))
-                if (rot.length === 1) {
-                    bricks[currentBrick].rotation = new Vector3(0, 0, (rot[0] % 90) != 0 ? rot[0] + 90 : 0)
-                } else {
-                    bricks[currentBrick].rotation = new Vector3(rot[0], rot[1], rot[2])
+        if (DATA[0][0] === "+") {
+            switch (ATTRIBUTE) {
+                case "NAME": {
+                    bricks[currentBrick].name = VALUE
+                    continue
                 }
-                continue
-            }
-            case "SHAPE": {
-                bricks[currentBrick].shape = VALUE
-                if (VALUE === "spawnpoint")
-                    spawns.push(bricks[currentBrick])
-                continue
-            }
-            case "MODEL": {
-                bricks[currentBrick].model = Number(VALUE)
-                continue
-            }
-            case "NOCOLLISION": {
-                bricks[currentBrick].collision = false
-                continue
-            }
-            case "COLOR": {
-                const colors = VALUE.split(" ")
-                const color = convertRGB(colors[0], colors[1], colors[2])
-                const team = new Team(
-                    teams[teams.length - 1],
-                    rgbToHex(
-                        color[0],
-                        color[1],
-                        color[2]
+                case "ROT": {
+                    const rot = VALUE.split(" ").map(val => Number(val))
+                    if (rot.length === 1) {
+                        bricks[currentBrick].rotation = new Vector3(0, 0, (rot[0] % 90) != 0 ? rot[0] + 90 : 0)
+                    } else {
+                        bricks[currentBrick].rotation = new Vector3(rot[0], rot[1], rot[2])
+                    }
+                    continue
+                }
+                case "SHAPE": {
+                    bricks[currentBrick].shape = VALUE
+                    if (VALUE === "spawnpoint")
+                        spawns.push(bricks[currentBrick])
+                    continue
+                }
+                case "MODEL": {
+                    bricks[currentBrick].model = Number(VALUE)
+                    continue
+                }
+                case "NOCOLLISION": {
+                    bricks[currentBrick].collision = false
+                    continue
+                }
+                case "COLOR": {
+                    const colors = VALUE.split(" ")
+                    const color = convertRGB(colors[0], colors[1], colors[2])
+                    const team = new Team(
+                        teams[teams.length - 1],
+                        rgbToHex(
+                            color[0],
+                            color[1],
+                            color[2]
+                        )
                     )
-                )
-                teams[teams.length - 1] = team
-                continue
-            }
-            case "LIGHT": {
-                const colors = VALUE.split(' ')
-                const lightRange = colors[3]
-                const RGB = convertRGB(colors[0], colors[1], colors[2])
-                bricks[currentBrick].lightEnabled = true
-                bricks[currentBrick].lightRange = lightRange
-                bricks[currentBrick].lightColor = rgbToHex(RGB[0], RGB[1], RGB[2])
-                continue
-            }
-            case "SCRIPT": {
-                if (scriptWarning) continue
-                scriptWarning = true
-                console.warn("WARNING: This set contains scripts. Scripts are incompatible with node-hill so they will not be loaded.")
-                continue
+                    teams[teams.length - 1] = team
+                    continue
+                }
+                case "LIGHT": {
+                    const colors = VALUE.split(' ')
+                    const lightRange = colors[3]
+                    const RGB = convertRGB(colors[0], colors[1], colors[2])
+                    bricks[currentBrick].lightEnabled = true
+                    bricks[currentBrick].lightRange = lightRange
+                    bricks[currentBrick].lightColor = rgbToHex(RGB[0], RGB[1], RGB[2])
+                    continue
+                }
+                case "SCRIPT": {
+                    if (scriptWarning) continue
+                    scriptWarning = true
+                    console.warn("WARNING: This set contains scripts. Scripts are incompatible with node-hill so they will not be loaded.")
+                    continue
+                }
+                default: {
+                    bricks[currentBrick].additionalAttributes[ATTRIBUTE] = VALUE
+                }
             }
         }
 
