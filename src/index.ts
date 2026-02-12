@@ -1,8 +1,8 @@
 // Node + npm modules
 import { resolve, basename, join, relative } from "path"
-import { promisify } from "util"
+import { promisify } from "node:util"
 import { NodeVM } from "vm2"
-import * as fs from "fs"
+import * as fs from "node:fs"
 import glob from "glob"
 
 // Have to use require here because phin doesn't support .defaults with TS
@@ -34,6 +34,7 @@ import Player from "./class/Player"
 // Libraries
 import { bundleMapData } from "nh-bundle/lib"
 import { SmartBuffer } from "smart-buffer"
+
 
 import AssetDownloaderInstance, { AssetDownloader } from "./class/AssetDownloader"
 import SanctionInstance, { Sanction } from "./class/Sanction"
@@ -206,7 +207,7 @@ function vmLoadScriptInDirectory(vm: NodeVM, scriptDirectory: string, scriptType
         }
 
         try {
-            const scriptContents = fs.readFileSync(filePath, "UTF-8")
+            const scriptContents = fs.readFileSync(filePath, { encoding: "utf-8" })
             vm.run(scriptContents, filePath)
             console.log(`[*] Loaded ${scriptType} Script: ${fileName}`)
         } catch (err) {

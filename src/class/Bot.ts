@@ -76,7 +76,7 @@ export default class Bot extends EventEmitter {
     /** An object containing the current assets worn by the bot. */
     assets: Assets
 
-    private _hitMonitor: NodeJS.Timer
+    private _hitMonitor: NodeJS.Timeout
 
     private _steps: Array<NodeJS.Timeout>
 

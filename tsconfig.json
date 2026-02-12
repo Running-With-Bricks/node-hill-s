@@ -3,11 +3,17 @@
     "outDir": "./dist",
     "module": "commonjs",
     "moduleResolution": "node",
-    "target": "es6",
+    "target": "es2020",
     "resolveJsonModule": true,
     "esModuleInterop": true,
     "allowJs": true,
     "noImplicitAny": false,
+    "types":["node"],
+    "lib": ["es2020"],
+    "baseUrl": ".",
+    "paths": {
+      "smart-buffer": ["node_modules/smart-buffer/typings/smartbuffer.d.ts"]
+    }
   },
   "include": [
     "src/**/*",
