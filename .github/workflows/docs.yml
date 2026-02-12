@@ -1,4 +1,5 @@
 name: Docs
+
 on:
   push:
     branches:
@@ -13,34 +14,38 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: pnpm/action-setup@v2
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v3
         with:
-          version: 7
-      - uses: actions/setup-node@v3
+          version: 8
+
+      - uses: actions/setup-node@v4
         with:
-          node-version: 16.x
-          cache: "pnpm"
+          node-version: 20
+          cache: pnpm
 
       - name: Install Dependencies
         run: pnpm install --no-frozen-lockfile
+
       - name: Build Docs
-        run: pnpm run build-docs # pnpm run build-docs builds the documentation in /public
+        run: pnpm run build-docs
+
       - name: Setup Pages
-        uses: actions/configure-pages@v3
+        uses: actions/configure-pages@v4
+
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v1
+        uses: actions/upload-pages-artifact@v3
         with:
-            path: './public'
+          path: ./public
 
   deploy:
     environment:
       name: github-pages
-      url: ${{steps.deployment.outputs.page_url}}
+      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     needs: build
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v2
-
+        uses: actions/deploy-pages@v4
