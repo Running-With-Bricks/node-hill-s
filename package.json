@@ -1,6 +1,6 @@
 {
   "name": "node-hill-s",
-  "version": "13.5.0",
+  "version": "13.5.1",
   "description": "A modified version of Node-Hill made for SandPile and improving the developer experience",
   "main": "./dist/src/index.js",
   "dependencies": {
