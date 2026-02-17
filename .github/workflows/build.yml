@@ -3,10 +3,15 @@ on:
   push:
     branches:
       - "**"
+    tags:
+      - "v*"
   pull_request:
     branches:
       - "**"
 
+permissions:
+  id-token: write  # Required for OIDC
+  contents: read
 
 jobs:
   build:
@@ -23,3 +28,4 @@ jobs:
 
       - run: pnpm install --no-frozen-lockfile
       - run: pnpm run lint && pnpm run build
+      - run: npm publish
