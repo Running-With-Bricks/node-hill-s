@@ -3,7 +3,7 @@ import { resolve, basename, join, relative } from "path"
 import { promisify } from "node:util"
 import { NodeVM } from "vm2"
 import * as fs from "node:fs"
-import glob from "glob"
+import {globSync} from "glob"
 
 // Have to use require here because phin doesn't support .defaults with TS
 const phin = require("phin")
@@ -195,7 +195,7 @@ const disableCoreScript = (name: string) => {
 }
 
 function vmLoadScriptInDirectory(vm: NodeVM, scriptDirectory: string, scriptType: string) {
-    const files = glob.sync(scriptDirectory + recursePattern(), { dot: true })
+    const files = globSync(scriptDirectory + recursePattern(), { dot: true })
 
     for (const filePath of files) {
         const fileName = basename(filePath)
