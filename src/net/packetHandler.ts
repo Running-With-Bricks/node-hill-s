@@ -40,7 +40,11 @@ const ALLOWED_CHARACTERS = new RegExp(`[^ !"$-~]`, "g")
 const clamp = (min: number, max: number) => (value: number) =>
     value < min ? min : value > max ? max : value
 
-async function handlePacketType(type: ClientPacketType, socket: ClientSocket, reader: SmartBuffer) {
+async function handlePacketType(
+    type: ClientPacketType,
+    socket: ClientSocket,
+    reader: SmartBuffer
+) {
     const player = socket.player
 
     // Drop auth-required packets if the client isn't authenticated.
@@ -50,7 +54,9 @@ async function handlePacketType(type: ClientPacketType, socket: ClientSocket, re
         case ClientPacketType.Authentication: {
             if (socket._attemptedAuthentication) {
                 if (Sanction.banSocket(socket))
-                    return console.warn("[SANCTION] Client attempted to authenticate more than once.")
+                    return console.warn(
+                        "[SANCTION] Client attempted to authenticate more than once."
+                    )
                 // If sanction is disabled we should destroy their socket.
                 return socket.destroy()
             }
@@ -71,7 +77,10 @@ async function handlePacketType(type: ClientPacketType, socket: ClientSocket, re
             // Check if player is already in game + kick them if so.
             for (const player of Game.players) {
                 if (player.userId === authResponse.userId)
-                    return scripts.kick(socket, "You can only join this game once per account.")
+                    return scripts.kick(
+                        socket,
+                        "You can only join this game once per account."
+                    )
             }
 
             const authUser = new Player(socket)
@@ -86,13 +95,13 @@ async function handlePacketType(type: ClientPacketType, socket: ClientSocket, re
                 validationToken: { value: authResponse.validator }
             })
 
-            console.log(`Successfully verified! (Username: ${authUser.username} | ID: ${authUser.userId} | Admin: ${authUser.admin})`)
+            console.log(
+                `Successfully verified! (Username: ${authUser.username} | ID: ${authUser.userId} | Admin: ${authUser.admin})`
+            )
 
-            if (Game.afterAuth !== null)
-                await Game.afterAuth(authUser)
+            if (Game.afterAuth !== null) await Game.afterAuth(authUser)
 
-            if (socket._kickInProcess)
-                return
+            if (socket._kickInProcess) return
 
             // Finalize the player joining process.
             Game._newPlayer(authUser)
@@ -130,7 +139,8 @@ async function handlePacketType(type: ClientPacketType, socket: ClientSocket, re
             break
         }
         case ClientPacketType.Command: {
-            let command = "", args = ""
+            let command = "",
+                args = ""
 
             try {
                 command = reader.readStringNT()
@@ -157,7 +167,12 @@ async function handlePacketType(type: ClientPacketType, socket: ClientSocket, re
             if (command === "chat") {
                 // The host wants to manage chat on their own
                 if (Game.listeners("chat").length)
-                    return Game.emit("chat", player, args, generateTitle(player, args))
+                    return Game.emit(
+                        "chat",
+                        player,
+                        args,
+                        generateTitle(player, args)
+                    )
 
                 return player.messageAll(args)
             }
@@ -174,13 +189,17 @@ async function handlePacketType(type: ClientPacketType, socket: ClientSocket, re
                 const brickId = reader.readUInt32LE()
 
                 // Check for global bricks with that Id.
-                const brick = Game.world.bricks.find(brick => brick.netId === brickId)
+                const brick = Game.world.bricks.find(
+                    (brick) => brick.netId === brickId
+                )
                 if (brick && brick.clickable)
                     return brick.emit("clicked", player)
 
                 // The brick might be local.
                 const localBricks = player.localBricks
-                const localBrick = localBricks.find(brick => brick.netId === brickId)
+                const localBrick = localBricks.find(
+                    (brick) => brick.netId === brickId
+                )
 
                 if (localBrick && localBrick.clickable)
                     return localBrick.emit("clicked", player)
@@ -235,53 +254,83 @@ async function handlePacketType(type: ClientPacketType, socket: ClientSocket, re
     }
 }
 
-export default async function parsePacket(socket: ClientSocket, rawBuffer: Buffer) {
+export default async function parsePacket(
+    socket: ClientSocket,
+    rawBuffer: Buffer
+) {
     let packets = []
 
-    if (rawBuffer.length <= 1)
-        return socket._chunk.clear();
+    if (rawBuffer.length <= 1) return socket._chunk.clear()
 
-    (function readMessages(socket) {
+    while (socket._chunk.recieve.length) {
         // Packet is new, parse the size of it.
         if (!socket._chunk.remaining) {
-            const { messageSize, end } = readUIntV(socket._chunk.recieve)
+            let messageSize: number
+            let end: number
+
+            try {
+                ;({ messageSize, end } = readUIntV(socket._chunk.recieve))
+            } catch (err) {
+                packets = []
+                Sanction.debugLog({
+                    banType: "UINTV_SIZE",
+                    uintvSize: 0,
+                    buffer: socket._chunk.recieve.toString("hex")
+                })
+                socket._chunk.clear()
+                return console.warn(
+                    `[SANCTION] Client sent a packet with a zero-length frame.`
+                )
+            }
 
             if (messageSize > MAX_PACKET_SIZE && Sanction.banSocket(socket)) {
                 packets = []
-                Sanction.debugLog({ banType: "UINTV_SIZE", uintvSize: messageSize, buffer: socket._chunk.recieve.toString('hex') })
+                Sanction.debugLog({
+                    banType: "UINTV_SIZE",
+                    uintvSize: messageSize,
+                    buffer: socket._chunk.recieve.toString("hex")
+                })
                 socket._chunk.clear()
-                return console.warn(`[SANCTION] Client sent a packet with a uintv size larger than ${MAX_PACKET_SIZE} bytes.`)
+                return console.warn(
+                    `[SANCTION] Client sent a packet with a uintv size larger than ${MAX_PACKET_SIZE} bytes.`
+                )
             }
 
             socket._chunk.remaining = messageSize
             socket._chunk.recieve = socket._chunk.recieve.slice(end)
         }
 
+        // Packet is incomplete
+        if (socket._chunk.recieve.length < socket._chunk.remaining) break
+
         // Packet is complete
         if (socket._chunk.recieve.length === socket._chunk.remaining) {
             packets.push(socket._chunk.recieve)
             socket._chunk.clear()
-            return
+            break
         }
 
-        // Remaining packets
-        if (socket._chunk.recieve.length > socket._chunk.remaining) {
-            packets.push(socket._chunk.recieve.slice(0, socket._chunk.remaining))
-            socket._chunk.recieve = socket._chunk.recieve.slice(socket._chunk.remaining)
-            socket._chunk.remaining = 0
-            readMessages(socket)
-        }
-    })(socket)
+        packets.push(socket._chunk.recieve.slice(0, socket._chunk.remaining))
+        socket._chunk.recieve = socket._chunk.recieve.slice(
+            socket._chunk.remaining
+        )
+        socket._chunk.remaining = 0
+    }
 
     for (let packet of packets) {
         try {
             packet = zlib.inflateSync(packet)
-        } catch (err) { }
+        } catch (err) {}
 
         if (packet.length > MAX_PACKET_SIZE && Sanction.banSocket(socket)) {
             packets = []
-            Sanction.debugLog({ banType: "PACKET_TOO_LARGE", buffer: packet.toString('hex') })
-            return console.warn(`[SANCTION] Client sent a packet larger than ${MAX_PACKET_SIZE} bytes.`)
+            Sanction.debugLog({
+                banType: "PACKET_TOO_LARGE",
+                buffer: packet.toString("hex")
+            })
+            return console.warn(
+                `[SANCTION] Client sent a packet larger than ${MAX_PACKET_SIZE} bytes.`
+            )
         }
 
         const reader = SmartBuffer.fromBuffer(packet)
@@ -290,13 +339,22 @@ export default async function parsePacket(socket: ClientSocket, rawBuffer: Buffe
         let type: number
         try {
             type = reader.readUInt8()
-        } catch (err) { }
+        } catch (err) {}
 
         // Packet ID was not valid
-        if (Game.banNonClientTraffic && !Object.values(ClientPacketType).includes(type)) {
+        if (
+            Game.banNonClientTraffic &&
+            !Object.values(ClientPacketType).includes(type)
+        ) {
             if (Sanction.banSocket(socket)) {
-                Sanction.debugLog({ banType: "NON_BH_TRAFFIC", packetType: type, buffer: packet.toString('hex') })
-                return console.warn("[SANCTION] Client sent non-Brick Hill traffic.")
+                Sanction.debugLog({
+                    banType: "NON_BH_TRAFFIC",
+                    packetType: type,
+                    buffer: packet.toString("hex")
+                })
+                return console.warn(
+                    "[SANCTION] Client sent non-Brick Hill traffic."
+                )
             }
         }
 
