@@ -53,10 +53,7 @@ async function handlePacketType(
     switch (type) {
         case ClientPacketType.Authentication: {
             if (socket._attemptedAuthentication) {
-                if (Sanction.banSocket(socket))
-                    return console.warn(
-                        "[SANCTION] Client attempted to authenticate more than once."
-                    )
+                if (Sanction.banSocket(socket)) return console.warn("[SANCTION] Client attempted to authenticate more than once.")
                 // If sanction is disabled we should destroy their socket.
                 return socket.destroy()
             }
@@ -75,12 +72,8 @@ async function handlePacketType(
             if (socket.destroyed) return
 
             // Check if player is already in game + kick them if so.
-            for (const player of Game.players) {
-                if (player.userId === authResponse.userId)
-                    return scripts.kick(
-                        socket,
-                        "You can only join this game once per account."
-                    )
+            if (Game.players.find(player => player.userId == authResponse.userId)) {
+                return scripts.kick(socket, "You can only join this game once per account.")
             }
 
             const authUser = new Player(socket)
@@ -95,9 +88,7 @@ async function handlePacketType(
                 validationToken: { value: authResponse.validator }
             })
 
-            console.log(
-                `Successfully verified! (Username: ${authUser.username} | ID: ${authUser.userId} | Admin: ${authUser.admin})`
-            )
+            console.log(`Successfully verified! (Username: ${authUser.username} | ID: ${authUser.userId} | Admin: ${authUser.admin})`)
 
             if (Game.afterAuth !== null) await Game.afterAuth(authUser)
 
@@ -197,12 +188,9 @@ async function handlePacketType(
 
                 // The brick might be local.
                 const localBricks = player.localBricks
-                const localBrick = localBricks.find(
-                    (brick) => brick.netId === brickId
-                )
+                const localBrick = localBricks.find(brick => brick.netId === brickId)
 
-                if (localBrick && localBrick.clickable)
-                    return localBrick.emit("clicked", player)
+                if (localBrick && localBrick.clickable) return localBrick.emit("clicked", player)
             } catch (err) {
                 return
             }
@@ -215,8 +203,7 @@ async function handlePacketType(
 
                 if (click) player.emit("mouseclick")
 
-                if (key && whiteListedKeys.includes(key))
-                    player.emit("keypress", key)
+                if (key && whiteListedKeys.includes(key)) player.emit("keypress", key)
             } catch (err) {
                 return
             }
@@ -227,8 +214,7 @@ async function handlePacketType(
                 const amount = reader.readUInt8(reader.length - 1)
                 for (let i = 0; i < amount; i++) {
                     const key = reader.readStringNT()
-                    if (key && whiteListedKeys.includes(key))
-                        player.emit("keydown", key)
+                    if (key && whiteListedKeys.includes(key)) player.emit("keydown", key)
                 }
             } catch (err) {
                 return
@@ -240,8 +226,7 @@ async function handlePacketType(
                 const amount = reader.readUInt8(reader.length - 1)
                 for (let i = 0; i < amount; i++) {
                     const key = reader.readStringNT()
-                    if (key && whiteListedKeys.includes(key))
-                        player.emit("keyup", key)
+                    if (key && whiteListedKeys.includes(key)) player.emit("keyup", key)
                 }
             } catch (err) {
                 return
@@ -272,28 +257,16 @@ export default async function parsePacket(
                 ;({ messageSize, end } = readUIntV(socket._chunk.recieve))
             } catch (err) {
                 packets = []
-                Sanction.debugLog({
-                    banType: "UINTV_SIZE",
-                    uintvSize: 0,
-                    buffer: socket._chunk.recieve.toString("hex")
-                })
+                Sanction.debugLog({ banType: "UINTV_SIZE", uintvSize: 0, buffer: socket._chunk.recieve.toString("hex") })
                 socket._chunk.clear()
-                return console.warn(
-                    `[SANCTION] Client sent a packet with a zero-length frame.`
-                )
+                return console.warn(`[SANCTION] Client sent a packet with a zero-length frame.`)
             }
 
             if (messageSize > MAX_PACKET_SIZE && Sanction.banSocket(socket)) {
                 packets = []
-                Sanction.debugLog({
-                    banType: "UINTV_SIZE",
-                    uintvSize: messageSize,
-                    buffer: socket._chunk.recieve.toString("hex")
-                })
+                Sanction.debugLog({ banType: "UINTV_SIZE", uintvSize: messageSize, buffer: socket._chunk.recieve.toString("hex") })
                 socket._chunk.clear()
-                return console.warn(
-                    `[SANCTION] Client sent a packet with a uintv size larger than ${MAX_PACKET_SIZE} bytes.`
-                )
+                return console.warn(`[SANCTION] Client sent a packet with a uintv size larger than ${MAX_PACKET_SIZE} bytes.`)
             }
 
             socket._chunk.remaining = messageSize
@@ -311,9 +284,7 @@ export default async function parsePacket(
         }
 
         packets.push(socket._chunk.recieve.slice(0, socket._chunk.remaining))
-        socket._chunk.recieve = socket._chunk.recieve.slice(
-            socket._chunk.remaining
-        )
+        socket._chunk.recieve = socket._chunk.recieve.slice(socket._chunk.remaining)
         socket._chunk.remaining = 0
     }
 
@@ -324,13 +295,8 @@ export default async function parsePacket(
 
         if (packet.length > MAX_PACKET_SIZE && Sanction.banSocket(socket)) {
             packets = []
-            Sanction.debugLog({
-                banType: "PACKET_TOO_LARGE",
-                buffer: packet.toString("hex")
-            })
-            return console.warn(
-                `[SANCTION] Client sent a packet larger than ${MAX_PACKET_SIZE} bytes.`
-            )
+            Sanction.debugLog({ banType: "PACKET_TOO_LARGE", buffer: packet.toString("hex") })
+            return console.warn(`[SANCTION] Client sent a packet larger than ${MAX_PACKET_SIZE} bytes.`)
         }
 
         const reader = SmartBuffer.fromBuffer(packet)
@@ -347,23 +313,13 @@ export default async function parsePacket(
             !Object.values(ClientPacketType).includes(type)
         ) {
             if (Sanction.banSocket(socket)) {
-                Sanction.debugLog({
-                    banType: "NON_BH_TRAFFIC",
-                    packetType: type,
-                    buffer: packet.toString("hex")
-                })
-                return console.warn(
-                    "[SANCTION] Client sent non-Brick Hill traffic."
-                )
+                Sanction.debugLog({ banType: "NON_BH_TRAFFIC", packetType: type, buffer: packet.toString("hex") })
+                return console.warn("[SANCTION] Client sent non-Brick Hill traffic.")
             }
         }
 
         if (Game.listenerCount("newPacket")) {
-            Game.emit("newPacket", {
-                packetId: type,
-                player: socket.player,
-                buffer: packet
-            })
+            Game.emit("newPacket", { packetId: type, player: socket.player, buffer: packet })
         }
 
         handlePacketType(type, socket, reader)

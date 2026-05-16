@@ -8,7 +8,7 @@ export function readUIntV(buffer: Buffer): Message {
     if (buffer[0] & 1) {
         const messageSize = buffer[0] >> 1
 
-        if (!messageSize)
+        if (!messageSize)   
             throw new RangeError("Zero-length uintv frames are invalid.")
 
         return {
@@ -24,11 +24,7 @@ export function readUIntV(buffer: Buffer): Message {
         // 3 Bytes
     } else if (buffer[0] & 4) {
         return {
-            messageSize:
-                (buffer[2] << 13) +
-                (buffer[1] << 5) +
-                (buffer[0] >> 3) +
-                0x4080,
+            messageSize: (buffer[2] << 13) + (buffer[1] << 5) + (buffer[0] >> 3) + 0x4080,
             end: 3
         }
         // 4 Bytes
