@@ -1,6 +1,6 @@
 {
   "name": "node-hill-s",
-  "version": "13.5.2",
+  "version": "13.5.3",
   "description": "A modified version of Node-Hill made for SandPile and improving the developer experience",
   "main": "./dist/src/index.js",
   "dependencies": {
@@ -10,7 +10,7 @@
     "phin": "^3.7.1",
     "serverline": "^1.5.0",
     "smart-buffer": "^4.2.0",
-    "vm2": "^3.10.4"
+    "vm2": "^3.11.3"
   },
   "types": "./types.d.ts",
   "devDependencies": {
