@@ -72,7 +72,7 @@ async function handlePacketType(
             if (socket.destroyed) return
 
             // Check if player is already in game + kick them if so.
-            if (Game.players.find(player => player.userId == authResponse.userId)) {
+            if (Game.players.find(player => player.userId === authResponse.userId)) {
                 return scripts.kick(socket, "You can only join this game once per account.")
             }
 
