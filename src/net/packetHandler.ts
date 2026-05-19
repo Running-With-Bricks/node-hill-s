@@ -254,7 +254,9 @@ export default async function parsePacket(
             let end: number
 
             try {
-                ;({ messageSize, end } = readUIntV(socket._chunk.recieve))
+                const uintvVals = readUIntV(socket._chunk.recieve)
+                messageSize = uintvVals.messageSize
+                end = uintvVals.end
             } catch (err) {
                 packets = []
                 Sanction.debugLog({ banType: "UINTV_SIZE", uintvSize: 0, buffer: socket._chunk.recieve.toString("hex") })
@@ -291,7 +293,7 @@ export default async function parsePacket(
     for (let packet of packets) {
         try {
             packet = zlib.inflateSync(packet)
-        } catch (err) {}
+        } catch (err) { }
 
         if (packet.length > MAX_PACKET_SIZE && Sanction.banSocket(socket)) {
             packets = []
@@ -305,7 +307,7 @@ export default async function parsePacket(
         let type: number
         try {
             type = reader.readUInt8()
-        } catch (err) {}
+        } catch (err) { }
 
         // Packet ID was not valid
         if (
