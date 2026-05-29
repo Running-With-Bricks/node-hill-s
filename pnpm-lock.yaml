@@ -28,7 +28,7 @@ importers:
         version: 4.2.0
       vm2:
         specifier: ^3.11.3
-        version: 3.11.3
+        version: 3.11.4
     devDependencies:
       '@types/node':
         specifier: ^20.19.33
@@ -785,8 +785,8 @@ packages:
   v8-compile-cache@2.4.0:
     resolution: {integrity: sha512-ocyWc3bAHBB/guyqJQVI5o4BZkPhznPYUG2ea80Gond/BgNWpap8TOmLSeeQG7bnh2KMISxskdADG59j7zruhw==}
 
-  vm2@3.11.3:
-    resolution: {integrity: sha512-DO1TTKuOc+veL11VNOvJwRab80mghFKE40Av3bl6pdXs11bdiDMuR73owy+dS2EsTZEvRUeBkkBuDVRjV/RgEw==}
+  vm2@3.11.4:
+    resolution: {integrity: sha512-3assDRyB+A9/5rjECD2e2FAlezOfzCqejZy0L36zij4LgzoWZRA3a26q3PZnl6o5PmNjrTBRbAWACpdK/Y3qOQ==}
     engines: {node: '>=6.0'}
     hasBin: true
 
@@ -1548,7 +1548,7 @@ snapshots:
 
   v8-compile-cache@2.4.0: {}
 
-  vm2@3.11.3:
+  vm2@3.11.4:
     dependencies:
       acorn: 8.16.0
       acorn-walk: 8.3.5
